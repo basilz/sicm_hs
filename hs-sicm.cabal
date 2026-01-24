@@ -1,0 +1,79 @@
+cabal-version: 2.2
+
+-- This file has been generated from package.yaml by hpack version 0.37.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           hs-sicm
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/hs-sicm#readme>
+homepage:       https://github.com/basilz/hs-sicm#readme
+bug-reports:    https://github.com/basilz/hs-sicm/issues
+author:         Andrea Basile
+maintainer:     example@example.com
+copyright:      2025 Andrea Basile
+license:        BSD-3-Clause
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/basilz/hs-sicm
+
+library
+  exposed-modules:
+      Action
+      Lib
+      Types
+  other-modules:
+      Paths_hs_sicm
+  autogen-modules:
+      Paths_hs_sicm
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      ad
+    , base >=4.7 && <5
+    , numeric-tools
+    , symtegration
+  default-language: Haskell2010
+
+executable hs-sicm-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_hs_sicm
+  autogen-modules:
+      Paths_hs_sicm
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      ad
+    , base >=4.7 && <5
+    , hs-sicm
+    , numeric-tools
+    , symtegration
+  default-language: Haskell2010
+
+test-suite hs-sicm-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_hs_sicm
+  autogen-modules:
+      Paths_hs_sicm
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      ad
+    , base >=4.7 && <5
+    , hs-sicm
+    , hspec >=2.10
+    , numeric-tools
+    , symtegration
+  default-language: Haskell2010
