@@ -21,6 +21,7 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
+- reflection
 - ad
 - symtegration
 - numeric-tools
@@ -61,3 +62,5 @@ tests:
     dependencies:
     - hs-sicm
     - hspec >= 2.10
+    build-tools:
+    - hspec-discover

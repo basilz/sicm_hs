@@ -1,51 +1,42 @@
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeOperators #-}
 
-module Action where
+module Action(
+    action,
+    freeParticleLagrangian,
+    harmonicOscillatorLagrangian,
+    lagrangeEquation
+) where
 
-import Numeric.AD (Mode, diff, diffF)
+import Numeric.AD (Mode, Scalar, auto, diffF, grad)
 import Numeric.Tools.Integration
-import Types
+    ( defQuad, quadRomberg, QuadRes(quadRes) )
 
--- freeParticleLagrangian :: Mass -> Lagrangian Double
--- freeParticleLagrangian (Mass m) = Lagrangian {l = \localTuple -> sum (squareVelocity (time localTuple) <$> velocity localTuple)}
---   where
---     squareVelocity :: Double -> (Double -> Double) -> Double
---     squareVelocity t v = 0.5 * m * (v t * v t)
+fstFixed :: (Mode s, Scalar s ~ a) => [a] -> a -> ([s] -> (s, [s], [s]))
+fstFixed x t y = (auto t, fmap auto x, y)
 
-fstFixed :: a -> (b -> (a, b))
-fstFixed x y = (x, y)
+sndFixed :: (Mode s, Scalar s ~ a) => [a] -> a -> ([s] -> (s, [s], [s]))
+sndFixed y t x = (auto t, x, fmap auto y)
 
-sndFixed :: b -> (a -> (a, b))
-sndFixed y x = (x, y)
+d1 :: (Floating a) => (forall s. (Floating s, Mode s) => (s, [s], [s]) -> s) -> (a, [a], [a]) -> [a]
+d1 lagrangian (t, q, v) = grad (lagrangian . sndFixed v t) q
 
-d1 :: (Floating a) => (forall s. (Mode s) => (b, s) -> s) -> (b, a) -> a
-d1 f' (x, y) = diff (f' . fstFixed x) y
+d2 :: (Floating a) => (forall s. (Floating s, Mode s) => (s, [s], [s]) -> s) -> (a, [a], [a]) -> [a]
+d2 lagrangian (t, q, v) = grad (lagrangian . fstFixed q t) v
 
-d2 :: (Floating a) => (forall s. (Mode s) => (s, b) -> s) -> (b, a) -> a
-d2 f' (x, y) = diff (f' . sndFixed x) y
-
-expand :: (forall a. (Floating a) => a -> [a]) -> (T -> (T, Q, V))
+expand :: (Floating a, Mode a) => (forall a1. (Floating a1) => a1 -> [a1]) -> (a -> (a, [a], [a]))
 expand w t = (t, w t, diffF w t)
 
--- action :: (forall a. Floating a => a -> [a]) -> ((T, Q, V) -> Double) -> T -> Double
--- action w lagrangian = lagrangian . expand w
-
-action :: (forall a. (Floating a) => a -> [a]) -> ((T, Q, V) -> Double) -> T -> T -> Maybe Double
+action :: (forall a. (Floating a) => a -> [a]) -> ((Double, [Double], [Double]) -> Double) -> Double -> Double -> Maybe Double
 action w lagrangian t1 t2 = quadRes $ quadRomberg defQuad (t1, t2) (lagrangian . expand w)
 
-freeParticleLagrangian :: Mass -> (T, Q, V) -> Double
-freeParticleLagrangian (Mass m) (_, _, v) = 0.5 * m * sum ((^ 2) <$> v)
+freeParticleLagrangian :: (Floating a, Mode a) => a -> (a, [a], [a]) -> a
+freeParticleLagrangian m (_, _, v) = 0.5 * m * sum ((** 2) <$> v)
 
--- gamma :: [PathFunction] -> Double -> LocalTuple Double
--- gamma path t =
---   LocalTuple
---     { time = t,
---       position = applyPathFunction <$> path,
---       velocity = _diff <$> path
---     }
---   where
---     _diff :: PathFunction -> Double -> Double
---     _diff (PathFunction f) = diff f
+harmonicOscillatorLagrangian :: (Floating a, Mode a) => a -> a -> (a, [a], [a]) -> a
+harmonicOscillatorLagrangian m k (_, q, v) = 0.5 * m * sum ((** 2) <$> v) - 0.5 * k * sum ((** 2) <$> q)
 
--- action :: Lagrangian Double -> [PathFunction] -> Double -> Double -> Maybe Double
--- action lagrangian path t1 t2 = quadRes $ quadRomberg defQuad (t1, t2) (l lagrangian . gamma path)
+-- lagrangeEquation computes the Euler-Lagrange equations: d/dt(∂L/∂v) - ∂L/∂q = 0
+lagrangeEquation :: (Floating s, Mode s) => (forall a1. (Floating a1) => a1 -> [a1]) -> (forall s1. (Floating s1, Mode s1) => (s1, [s1], [s1]) -> s1) -> s -> [s]
+lagrangeEquation w lagrangian t = zipWith (-) (diffF (d2 lagrangian . expand w) t) ((d1 lagrangian . expand w) t)

@@ -5,7 +5,7 @@ module Types
     T,
     Q,
     V,
-    applyPathFunction,
+    Path, path
   )
 where
 
@@ -17,9 +17,4 @@ type Q = [Double]
 
 type V = [Double]
 
-newtype PathFunction = PathFunction
-  { runPathFunction :: forall a. (Floating a) => a -> a
-  }
-
-applyPathFunction :: (Floating a) => PathFunction -> a -> a
-applyPathFunction (PathFunction f) = f
+newtype Path = Path {path :: forall a. Floating a => a -> [a]}

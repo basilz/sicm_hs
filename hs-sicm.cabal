@@ -39,6 +39,7 @@ library
       ad
     , base >=4.7 && <5
     , numeric-tools
+    , reflection
     , symtegration
   default-language: Haskell2010
 
@@ -56,6 +57,7 @@ executable hs-sicm-exe
     , base >=4.7 && <5
     , hs-sicm
     , numeric-tools
+    , reflection
     , symtegration
   default-language: Haskell2010
 
@@ -63,17 +65,21 @@ test-suite hs-sicm-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      ActionSpec
       Paths_hs_sicm
   autogen-modules:
       Paths_hs_sicm
   hs-source-dirs:
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-tool-depends:
+      hspec-discover:hspec-discover
   build-depends:
       ad
     , base >=4.7 && <5
     , hs-sicm
     , hspec >=2.10
     , numeric-tools
+    , reflection
     , symtegration
   default-language: Haskell2010
