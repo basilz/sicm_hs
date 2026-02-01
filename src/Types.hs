@@ -14,7 +14,7 @@ type V = [Double]
 
 -- newtype Path = Path {path :: forall a. Floating a => a -> [a]}
 
-newtype Path = Path {path :: forall a. Floating a => a -> [a]}
+type Path = forall a. Floating a => a -> [a]
 
 type LocalTuple a = (a, [a], [a])
 

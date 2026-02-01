@@ -27,7 +27,7 @@ d2 :: (Floating a) => Lagrangian -> LocalTuple a -> [a]
 d2 lagrangian (t, q, v) = grad (lagrangian . fstFixed q t) v
 
 expand :: (Floating a, Mode a) => Path -> a -> LocalTuple a
-expand (Path w) t = (t, w t, diffF w t)
+expand (w) t = (t, w t, diffF w t)
 
 action :: Path -> Lagrangian -> Double -> Double -> Maybe Double
 action w lagrangian t1 t2 = quadRes $ quadRomberg defQuad (t1, t2) (lagrangian . expand w)
