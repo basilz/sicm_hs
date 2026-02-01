@@ -1,24 +1,25 @@
 {-# LANGUAGE RankNTypes #-}
 
-module ActionSpec(spec) where
+module ActionSpec (spec) where
 
 import Action
 import Test.Hspec (Spec, describe, it, shouldBe, shouldSatisfy)
+import Types
 
-testPathFreeParticle :: forall a. (Floating a) => a -> [a]
-testPathFreeParticle t = [4 * t + 7, 3 * t + 5, 2 * t + 1]
+testPathFreeParticle :: Path
+testPathFreeParticle = Path {path = \t -> [4 * t + 7, 3 * t + 5, 2 * t + 1]}
 
-testPathHarmonicOscillator :: forall a. (Floating a) => a -> [a]
-testPathHarmonicOscillator t = [5.0 * cos (sqrt (1.5 / 3.0) * t + pi)]
+testPathHarmonicOscillator :: Path
+testPathHarmonicOscillator = Path {path = \t -> [5.0 * cos (sqrt (1.5 / 3.0) * t + pi)]}
 
-eta :: forall a. (Floating a) => (a -> [a]) -> a -> a -> (a -> [a])
-eta w t1 t2 t = ((t - t1) * (t - t2) *) <$> w t
+eta :: Path -> Double -> Double -> Path
+eta (Path w) t1 t2 = Path {path = \t -> ((t - realToFrac t1) * (t - realToFrac t2) *) <$> w t}
 
-nu :: forall a. (Floating a) => a -> [a]
-nu t = [sin t, cos t, t ** 2]
+nu :: Path
+nu = Path {path = \t -> [sin t, cos t, t ** 2]}
 
-variedFPAction :: (Floating a) => (a -> [a]) -> a -> a -> a -> a -> [a]
-variedFPAction w epsilon t1 t2 t = zipWith (+) (w t) $ (epsilon *) <$> eta nu t1 t2 t
+variedFPAction :: Path -> Double -> Double -> Double -> Path
+variedFPAction (Path w) epsilon t1 t2 = Path {path = \t -> zipWith (+) (w t) $ (realToFrac epsilon *) <$> path (eta nu t1 t2) t}
 
 spec :: Spec
 spec = do
