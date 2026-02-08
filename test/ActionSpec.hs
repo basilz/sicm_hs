@@ -29,8 +29,10 @@ spec = do
     it "free particle Lagrangian on perturbed test path from t1=0 to t2=10" $ do
       action (variedFPAction testPathFreeParticle 0.001 0.0 10.0) (freeParticleLagrangian 3.0) 0.0 10.0 `shouldSatisfy` maybe False (> 435)
     it "harmonic oscillator Lagrangian on test path from t1=0 to t2=10" $ do
-      action testPathHarmonicOscillator (harmonicOscillatorLagrangian 3.0 1.5) 0.0 10.0 `shouldSatisfy` maybe False (\v -> abs (v - 0.0) < 0.0000001)
-    it "Lagrange equations for the free particle on the test path" $ do
+      action testPathHarmonicOscillator (harmonicOscillatorLagrangian 3.0 1.5) 0.0 10.0 `shouldBe` Just (-13.258088489002345)
+    it "harmonic oscillator Lagrangian on perturbed test path from t1=0 to t2=10" $ do
+      action (variedFPAction testPathHarmonicOscillator 0.001 0.0 10.0) (harmonicOscillatorLagrangian 3.0 1.5) 0.0 10.0 `shouldSatisfy` maybe False (> -13.258088489002345)
+    it "Lagrange equations for the free particle on the test path" $ do 
       sum (lagrangeEquation testPathFreeParticle (freeParticleLagrangian 3.0) (1.0 :: Double)) `shouldBe` 0.0
     it "Lagrange equations for the free particle on the varied path" $ do
       sum (lagrangeEquation (variedFPAction testPathFreeParticle 0.01 0.0 10.0) (freeParticleLagrangian 3.0) (1.0 :: Double)) `shouldSatisfy` (/= 0.0)

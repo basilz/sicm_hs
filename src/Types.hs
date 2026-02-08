@@ -6,13 +6,11 @@ import Numeric.AD (Mode)
 
 newtype Mass = Mass Double deriving (Eq, Show)
 
-type T = forall a. Floating a => a
+newtype T = T {time :: forall a. Floating a => a}
 
 type Q = [Double]
 
 type V = [Double]
-
--- newtype Path = Path {path :: forall a. Floating a => a -> [a]}
 
 type Path = forall a. Floating a => a -> [a]
 
